@@ -1,5 +1,9 @@
 # TinyElixirStripe
 
+> #### Warning {: .warning}
+>
+> This library is still experimental! It's thoroughly tested in ExUnit, but that's it.
+
 Stripe doesn't provide an official Elixir SDK, and maintaining a full-featured SDK has proven to be a challenge. As I see it, this is because the Elixir community is pretty senior-driven. People have no problem rolling their own integration with the incredible [Req](https://hexdocs.pm/req/Req.html) library. 
 
 This library is an attempt to wrap those community learnings in an easy-to-use package modeled after patterns set forth in Dashbit's [SDKs with Req: Stripe](https://dashbit.co/blog/sdks-with-req-stripe) article by Wojtek Mach. 
