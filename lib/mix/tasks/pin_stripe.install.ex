@@ -1,14 +1,14 @@
-defmodule Mix.Tasks.TinyElixirStripe.Install.Docs do
+defmodule Mix.Tasks.PinStripe.Install.Docs do
   @moduledoc false
 
   @spec short_doc() :: String.t()
   def short_doc do
-    "Install TinyElixirStripe with Stripe webhook support"
+    "Install PinStripe with Stripe webhook support"
   end
 
   @spec example() :: String.t()
   def example do
-    "mix tiny_elixir_stripe.install --path /webhooks/stripe"
+    "mix pin_stripe.install --path /webhooks/stripe"
   end
 
   @spec long_doc() :: String.t()
@@ -18,11 +18,11 @@ defmodule Mix.Tasks.TinyElixirStripe.Install.Docs do
 
     This installer will:
 
-    1. Replace Plug.Parsers with TinyElixirStripe.ParsersWithRawBody in your Phoenix endpoint
+    1. Replace Plug.Parsers with PinStripe.ParsersWithRawBody in your Phoenix endpoint
     2. Create a stub WebhookHandler module in lib/{app} for defining event handlers
-    3. Generate a StripeWebhookController in lib/{app}_web that uses TinyElixirStripe.WebhookController
+    3. Generate a StripeWebhookController in lib/{app}_web that uses PinStripe.WebhookController
     4. Add a webhook route to your router that points to the generated controller
-    5. Add :tiny_elixir_stripe to import_deps in .formatter.exs for DSL formatting support
+    5. Add :pin_stripe to import_deps in .formatter.exs for DSL formatting support
 
     The ParsersWithRawBody plug caches the raw request body for webhook signature verification,
     as required by Stripe's webhook security.
@@ -44,7 +44,7 @@ defmodule Mix.Tasks.TinyElixirStripe.Install.Docs do
 end
 
 if Code.ensure_loaded?(Igniter) do
-  defmodule Mix.Tasks.TinyElixirStripe.Install do
+  defmodule Mix.Tasks.PinStripe.Install do
     @shortdoc "#{__MODULE__.Docs.short_doc()}"
 
     @moduledoc __MODULE__.Docs.long_doc()
@@ -60,8 +60,8 @@ if Code.ensure_loaded?(Igniter) do
       version_requirement = "~> #{major}.#{minor}"
 
       %Igniter.Mix.Task.Info{
-        group: :tiny_elixir_stripe,
-        adds_deps: [{:tiny_elixir_stripe, version_requirement}],
+        group: :pin_stripe,
+        adds_deps: [{:pin_stripe, version_requirement}],
         installs: [],
         example: __MODULE__.Docs.example(),
         only: nil,
@@ -86,7 +86,7 @@ if Code.ensure_loaded?(Igniter) do
       |> add_formatter_config()
     end
 
-    # Replace Plug.Parsers with TinyElixirStripe.ParsersWithRawBody in the Phoenix endpoint
+    # Replace Plug.Parsers with PinStripe.ParsersWithRawBody in the Phoenix endpoint
     defp replace_plug_parsers(igniter) do
       {igniter, endpoint} = Igniter.Libs.Phoenix.select_endpoint(igniter)
 
@@ -100,7 +100,7 @@ if Code.ensure_loaded?(Igniter) do
     defp add_endpoint_warning(igniter) do
       Igniter.add_warning(
         igniter,
-        "Could not find a Phoenix endpoint to modify. Please manually replace Plug.Parsers with TinyElixirStripe.ParsersWithRawBody."
+        "Could not find a Phoenix endpoint to modify. Please manually replace Plug.Parsers with PinStripe.ParsersWithRawBody."
       )
     end
 
@@ -140,14 +140,14 @@ if Code.ensure_loaded?(Igniter) do
 
     defp replace_with_parsers_with_raw_body(zipper) do
       Igniter.Code.Function.update_nth_argument(zipper, 0, fn arg_zipper ->
-        new_module = {:__aliases__, [alias: false], [:TinyElixirStripe, :ParsersWithRawBody]}
+        new_module = {:__aliases__, [alias: false], [:PinStripe, :ParsersWithRawBody]}
         {:ok, Sourceror.Zipper.replace(arg_zipper, new_module)}
       end)
     end
 
-    # Add formatter configuration to import TinyElixirStripe DSL formatting rules
+    # Add formatter configuration to import PinStripe DSL formatting rules
     defp add_formatter_config(igniter) do
-      Igniter.Project.Formatter.import_dep(igniter, :tiny_elixir_stripe)
+      Igniter.Project.Formatter.import_dep(igniter, :pin_stripe)
     end
 
     # Create a webhook controller in lib/{app}_web
@@ -163,7 +163,7 @@ if Code.ensure_loaded?(Igniter) do
 
       # Create the controller using standard Igniter module creation
       Igniter.Project.Module.create_module(igniter, controller_module, """
-      use TinyElixirStripe.WebhookController, 
+      use PinStripe.WebhookController, 
         handler: #{inspect(handler_module)}
       """)
     end
@@ -211,13 +211,13 @@ if Code.ensure_loaded?(Igniter) do
 
             ## Available Events
 
-            Run `mix tiny_elixir_stripe.gen.handler <event_name>` to generate a handler
+            Run `mix pin_stripe.gen.handler <event_name>` to generate a handler
             for a specific Stripe event. For example:
 
-                mix tiny_elixir_stripe.gen.handler customer.subscription.updated
+                mix pin_stripe.gen.handler customer.subscription.updated
 
             \"\"\"
-            use TinyElixirStripe.WebhookHandler
+            use PinStripe.WebhookHandler
             """)
 
           {igniter, module_name}
@@ -235,7 +235,7 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     defp find_existing_webhook_handler(igniter) do
-      # Search all .ex files in the project for modules using TinyElixirStripe.WebhookHandler
+      # Search all .ex files in the project for modules using PinStripe.WebhookHandler
       found_module =
         igniter.rewrite
         |> Rewrite.sources()
@@ -249,7 +249,7 @@ if Code.ensure_loaded?(Igniter) do
 
       with true <- Path.extname(path) == ".ex",
            content <- Rewrite.Source.get(source, :content),
-           true <- content =~ "use TinyElixirStripe.WebhookHandler",
+           true <- content =~ "use PinStripe.WebhookHandler",
            [_, module_name] <- Regex.run(~r/defmodule\s+([\w.]+)/, content) do
         Module.concat([module_name])
       else
@@ -310,7 +310,7 @@ if Code.ensure_loaded?(Igniter) do
     end
   end
 else
-  defmodule Mix.Tasks.TinyElixirStripe.Install do
+  defmodule Mix.Tasks.PinStripe.Install do
     @shortdoc "#{__MODULE__.Docs.short_doc()} | Install `igniter` to use"
 
     @moduledoc __MODULE__.Docs.long_doc()
@@ -320,7 +320,7 @@ else
     @impl Mix.Task
     def run(_argv) do
       Mix.shell().error("""
-      The task 'tiny_elixir_stripe.install' requires igniter. Please install igniter and try again.
+      The task 'pin_stripe.install' requires igniter. Please install igniter and try again.
 
       For more information, see: https://hexdocs.pm/igniter/readme.html#installation
       """)

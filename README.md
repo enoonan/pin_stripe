@@ -1,4 +1,6 @@
-# TinyElixirStripe
+# PinStripe
+
+**A sharp, professional Stripe integration for Elixir.**
 
 > #### Warning {: .warning}
 >
@@ -25,12 +27,12 @@ My hope is that this should suffice for 95% of all apps that need to integrate w
 The fastest way to install is using the Igniter installer:
 
 ```bash
-mix igniter.install tiny_elixir_stripe
+mix igniter.install pin_stripe
 ```
 
 This will:
 1. Add the dependency to your `mix.exs`
-2. Replace `Plug.Parsers` with `TinyElixirStripe.ParsersWithRawBody` in your Phoenix endpoint (required for webhook signature verification)
+2. Replace `Plug.Parsers` with `PinStripe.ParsersWithRawBody` in your Phoenix endpoint (required for webhook signature verification)
 3. Create a `StripeWebhookHandlers` module for defining event handlers
 4. Generate a `StripeWebhookController` in your Phoenix app
 5. Add the webhook route to your router (default: `/webhooks/stripe`)
@@ -39,7 +41,7 @@ This will:
 Then configure your Stripe credentials in `config/runtime.exs`:
 
 ```elixir
-config :tiny_elixir_stripe,
+config :pin_stripe,
   stripe_api_key: System.get_env("YOUR_STRIPE_KEY_ENV_VAR"),
   stripe_webhook_secret: System.get_env("YOUR_WEBHOOK_SECRET_ENV_VAR")
 ```
@@ -51,7 +53,7 @@ If you prefer not to use Igniter, add to your `mix.exs`:
 ```elixir
 def deps do
   [
-    {:tiny_elixir_stripe, "~> 0.1"}
+    {:pin_stripe, "~> 0.1"}
   ]
 end
 ```
@@ -63,7 +65,7 @@ Then follow the [Manual Setup](#manual-setup) instructions below.
 The default webhook path is `/webhooks/stripe`. If you need to change it later:
 
 ```bash
-mix tiny_elixir_stripe.set_webhook_path /new/webhook/path
+mix pin_stripe.set_webhook_path /new/webhook/path
 ```
 
 ### Manual Installation (without Igniter)
@@ -80,7 +82,7 @@ plug Plug.Parsers,
   json_decoder: Jason
 
 # With this:
-plug TinyElixirStripe.ParsersWithRawBody,
+plug PinStripe.ParsersWithRawBody,
   parsers: [:urlencoded, :multipart, :json],
   pass: ["*/*"],
   json_decoder: Jason
@@ -90,7 +92,7 @@ plug TinyElixirStripe.ParsersWithRawBody,
 
 ```elixir
 defmodule MyApp.StripeWebhookHandlers do
-  use TinyElixirStripe.WebhookHandler
+  use PinStripe.WebhookHandler
 
   # Define your handlers here (see examples below)
 end
@@ -100,7 +102,7 @@ end
 
 ```elixir
 defmodule MyAppWeb.StripeWebhookController do
-  use TinyElixirStripe.WebhookController,
+  use PinStripe.WebhookController,
     handler: MyApp.StripeWebhookHandlers
 end
 ```
@@ -117,14 +119,14 @@ end
 
 ```elixir
 [
-  import_deps: [:tiny_elixir_stripe],
+  import_deps: [:pin_stripe],
   # ... rest of config
 ]
 ```
 
 ## Handling Stripe Webhooks
 
-TinyElixirStripe provides a clean DSL for handling webhook events. When Stripe sends a webhook to your endpoint, the controller automatically:
+PinStripe provides a clean DSL for handling webhook events. When Stripe sends a webhook to your endpoint, the controller automatically:
 - Verifies the webhook signature using your signing secret
 - Parses the event
 - Dispatches it to the appropriate handler
@@ -135,7 +137,7 @@ Define inline handlers for simple event processing:
 
 ```elixir
 defmodule MyApp.StripeWebhookHandlers do
-  use TinyElixirStripe.WebhookHandler
+  use PinStripe.WebhookHandler
 
   handle "customer.created", fn event ->
     customer_id = event["data"]["object"]["id"]
@@ -165,7 +167,7 @@ For more complex event processing, use separate modules:
 
 ```elixir
 defmodule MyApp.StripeWebhookHandlers do
-  use TinyElixirStripe.WebhookHandler
+  use PinStripe.WebhookHandler
 
   handle "customer.subscription.created", MyApp.StripeWebhookHandlers.SubscriptionCreated
   handle "customer.subscription.updated", MyApp.StripeWebhookHandlers.SubscriptionUpdated
@@ -201,13 +203,13 @@ Use the generator to quickly scaffold handlers:
 
 ```bash
 # Generates a function handler
-mix tiny_elixir_stripe.gen.handler customer.created
+mix pin_stripe.gen.handler customer.created
 
 # Generates a module handler
-mix tiny_elixir_stripe.gen.handler customer.subscription.created --handler-type module
+mix pin_stripe.gen.handler customer.subscription.created --handler-type module
 
 # Generates with custom module name
-mix tiny_elixir_stripe.gen.handler charge.succeeded --handler-type module --module MyApp.Payments.ChargeHandler
+mix pin_stripe.gen.handler charge.succeeded --handler-type module --module MyApp.Payments.ChargeHandler
 ```
 
 The generator will:
@@ -220,7 +222,7 @@ The generator will:
 Keep your local handlers in sync with your Stripe webhook configuration:
 
 ```bash
-mix tiny_elixir_stripe.sync_webhook_handlers
+mix pin_stripe.sync_webhook_handlers
 ```
 
 This task will:
@@ -271,12 +273,12 @@ Generating handlers...
 
 ## Calling the Stripe API
 
-The `TinyElixirStripe.Client` module provides a simple CRUD interface for interacting with the Stripe API, built on Req.
+The `PinStripe.Client` module provides a simple CRUD interface for interacting with the Stripe API, built on Req.
 
 ### Basic Usage
 
 ```elixir
-alias TinyElixirStripe.Client
+alias PinStripe.Client
 
 # Fetch a customer by ID
 {:ok, response} = Client.read("cus_123")
@@ -362,15 +364,15 @@ Configure Req.Test for testing:
 
 ```elixir
 # config/test.exs
-config :tiny_elixir_stripe,
-  req_options: [plug: {Req.Test, TinyElixirStripe}]
+config :pin_stripe,
+  req_options: [plug: {Req.Test, PinStripe}]
 ```
 
 In your tests:
 
 ```elixir
 test "creates a customer" do
-  Req.Test.stub(TinyElixirStripe, fn conn ->
+  Req.Test.stub(PinStripe, fn conn ->
     Req.Test.json(conn, %{
       id: "cus_test_123",
       email: "test@example.com",
@@ -387,13 +389,13 @@ end
 
 ```elixir
 # config/config.exs
-config :tiny_elixir_stripe,
+config :pin_stripe,
   stripe_api_key: System.get_env("STRIPE_SECRET_KEY"),
   stripe_webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
 
 # config/test.exs  
-config :tiny_elixir_stripe,
-  req_options: [plug: {Req.Test, TinyElixirStripe}]
+config :pin_stripe,
+  req_options: [plug: {Req.Test, PinStripe}]
 ```
 
 ****

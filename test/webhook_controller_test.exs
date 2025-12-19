@@ -1,17 +1,17 @@
-defmodule TinyElixirStripe.WebhookControllerTest do
+defmodule PinStripe.WebhookControllerTest do
   use ExUnit.Case, async: true
 
   import Plug.Test
   import Plug.Conn
   import ExUnit.CaptureLog
 
-  alias TinyElixirStripe.WebhookSignature
+  alias PinStripe.WebhookSignature
 
   @webhook_secret "whsec_test_secret_key_12345"
 
   # Test handler module
   defmodule TestHandler do
-    use TinyElixirStripe.WebhookHandler
+    use PinStripe.WebhookHandler
 
     handle "customer.created", fn event ->
       send(self(), {:handled, "customer.created", event})
@@ -26,15 +26,15 @@ defmodule TinyElixirStripe.WebhookControllerTest do
 
   # Test controller using the macro
   defmodule TestWebhookController do
-    use TinyElixirStripe.WebhookController, handler: TestHandler
+    use PinStripe.WebhookController, handler: TestHandler
   end
 
   setup do
     # Set up valid config
-    Application.put_env(:tiny_elixir_stripe, :stripe_webhook_secret, @webhook_secret)
+    Application.put_env(:pin_stripe, :stripe_webhook_secret, @webhook_secret)
 
     on_exit(fn ->
-      Application.delete_env(:tiny_elixir_stripe, :stripe_webhook_secret)
+      Application.delete_env(:pin_stripe, :stripe_webhook_secret)
     end)
 
     :ok
@@ -258,7 +258,7 @@ defmodule TinyElixirStripe.WebhookControllerTest do
     end
 
     test "requires secret to start with whsec_ prefix" do
-      Application.put_env(:tiny_elixir_stripe, :stripe_webhook_secret, "invalid_secret")
+      Application.put_env(:pin_stripe, :stripe_webhook_secret, "invalid_secret")
 
       payload = %{"type" => "customer.created", "id" => "evt_123"}
       conn = build_webhook_conn(payload)

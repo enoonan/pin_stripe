@@ -1,13 +1,13 @@
-defmodule TinyElixirStripe.ConfigurationTest do
+defmodule PinStripe.ConfigurationTest do
   use ExUnit.Case, async: false
 
   describe "stripe_api_key configuration" do
     test "Client uses :stripe_api_key config key" do
       # Set the config
-      Application.put_env(:tiny_elixir_stripe, :stripe_api_key, "sk_test_config_key")
-      Application.put_env(:tiny_elixir_stripe, :req_options, plug: {Req.Test, TinyElixirStripe})
+      Application.put_env(:pin_stripe, :stripe_api_key, "sk_test_config_key")
+      Application.put_env(:pin_stripe, :req_options, plug: {Req.Test, PinStripe})
 
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         # Verify the auth header contains the config value
         auth_header = Plug.Conn.get_req_header(conn, "authorization")
         assert auth_header == ["Bearer sk_test_config_key"]
@@ -16,19 +16,19 @@ defmodule TinyElixirStripe.ConfigurationTest do
       end)
 
       # Make a request to trigger the auth
-      TinyElixirStripe.Client.read("cus_123")
+      PinStripe.Client.read("cus_123")
 
       # Clean up
-      Application.delete_env(:tiny_elixir_stripe, :stripe_api_key)
-      Application.delete_env(:tiny_elixir_stripe, :req_options)
+      Application.delete_env(:pin_stripe, :stripe_api_key)
+      Application.delete_env(:pin_stripe, :req_options)
     end
 
     test "Client raises helpful error when :stripe_api_key is not configured" do
       # Ensure config is not set
-      Application.delete_env(:tiny_elixir_stripe, :stripe_api_key)
+      Application.delete_env(:pin_stripe, :stripe_api_key)
 
       assert_raise ArgumentError, ~r/:stripe_api_key/, fn ->
-        TinyElixirStripe.Client.read("cus_123")
+        PinStripe.Client.read("cus_123")
       end
     end
   end
@@ -36,23 +36,23 @@ defmodule TinyElixirStripe.ConfigurationTest do
   describe "stripe_webhook_secret configuration" do
     test "WebhookController uses :stripe_webhook_secret config key" do
       # Set the config
-      Application.put_env(:tiny_elixir_stripe, :stripe_webhook_secret, "whsec_test_secret")
+      Application.put_env(:pin_stripe, :stripe_webhook_secret, "whsec_test_secret")
 
       # Create a test payload and signature
       payload = ~s({"id":"evt_test","type":"customer.created","data":{"object":{}}})
       timestamp = System.system_time(:second)
-      signature = TinyElixirStripe.WebhookSignature.sign(payload, timestamp, "whsec_test_secret")
+      signature = PinStripe.WebhookSignature.sign(payload, timestamp, "whsec_test_secret")
 
       # The webhook controller internally calls verify/3 which fetches from config
       # We just need to verify the config key is correct
-      secret = Application.fetch_env!(:tiny_elixir_stripe, :stripe_webhook_secret)
+      secret = Application.fetch_env!(:pin_stripe, :stripe_webhook_secret)
       assert secret == "whsec_test_secret"
 
       # Verify that the signature verification works with this config
-      assert :ok = TinyElixirStripe.WebhookSignature.verify(payload, signature, secret)
+      assert :ok = PinStripe.WebhookSignature.verify(payload, signature, secret)
 
       # Clean up
-      Application.delete_env(:tiny_elixir_stripe, :stripe_webhook_secret)
+      Application.delete_env(:pin_stripe, :stripe_webhook_secret)
     end
 
     test "WebhookController code expects :stripe_webhook_secret config key" do
@@ -95,7 +95,7 @@ defmodule TinyElixirStripe.ConfigurationTest do
         content = File.read!(file)
 
         # If the file references stripe config, it should use the correct keys
-        if content =~ "fetch_env!" and content =~ ":tiny_elixir_stripe" do
+        if content =~ "fetch_env!" and content =~ ":pin_stripe" do
           # Check for correct keys
           assert content =~ ":stripe_api_key" or content =~ ":stripe_webhook_secret" or
                    not (content =~ "stripe" and content =~ "fetch_env"),

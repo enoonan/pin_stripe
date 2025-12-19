@@ -1,14 +1,14 @@
-defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPath.Docs do
+defmodule Mix.Tasks.PinStripe.SetWebhookPath.Docs do
   @moduledoc false
 
   @spec short_doc() :: String.t()
   def short_doc do
-    "Update the webhook endpoint path for TinyElixirStripe"
+    "Update the webhook endpoint path for PinStripe"
   end
 
   @spec example() :: String.t()
   def example do
-    "mix tiny_elixir_stripe.set_webhook_path /new/webhook/path"
+    "mix pin_stripe.set_webhook_path /new/webhook/path"
   end
 
   @spec long_doc() :: String.t()
@@ -34,7 +34,7 @@ defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPath.Docs do
 end
 
 if Code.ensure_loaded?(Igniter) do
-  defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPath do
+  defmodule Mix.Tasks.PinStripe.SetWebhookPath do
     @shortdoc "#{__MODULE__.Docs.short_doc()}"
 
     @moduledoc __MODULE__.Docs.long_doc()
@@ -44,7 +44,7 @@ if Code.ensure_loaded?(Igniter) do
     @impl Igniter.Mix.Task
     def info(_argv, _composing_task) do
       %Igniter.Mix.Task.Info{
-        group: :tiny_elixir_stripe,
+        group: :pin_stripe,
         adds_deps: [],
         installs: [],
         example: __MODULE__.Docs.example(),
@@ -65,9 +65,9 @@ if Code.ensure_loaded?(Igniter) do
         raise ArgumentError, """
         webhook path is required. 
 
-        Usage: mix tiny_elixir_stripe.set_webhook_path /new/path
+        Usage: mix pin_stripe.set_webhook_path /new/path
 
-        Example: mix tiny_elixir_stripe.set_webhook_path /webhooks/stripe
+        Example: mix pin_stripe.set_webhook_path /webhooks/stripe
         """
       end
 
@@ -130,7 +130,7 @@ if Code.ensure_loaded?(Igniter) do
     end
   end
 else
-  defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPath do
+  defmodule Mix.Tasks.PinStripe.SetWebhookPath do
     @shortdoc "#{__MODULE__.Docs.short_doc()} | Install `igniter` to use"
 
     @moduledoc __MODULE__.Docs.long_doc()
@@ -140,7 +140,7 @@ else
     @impl Mix.Task
     def run(_argv) do
       Mix.shell().error("""
-      The task 'tiny_elixir_stripe.set_webhook_path' requires igniter. Please install igniter and try again.
+      The task 'pin_stripe.set_webhook_path' requires igniter. Please install igniter and try again.
 
       For more information, see: https://hexdocs.pm/igniter/readme.html#installation
       """)

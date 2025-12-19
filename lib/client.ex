@@ -1,4 +1,4 @@
-defmodule TinyElixirStripe.Client do
+defmodule PinStripe.Client do
   @moduledoc """
   A minimal Stripe API client built on Req.
 
@@ -10,13 +10,13 @@ defmodule TinyElixirStripe.Client do
 
   Configure your Stripe API key in your application config:
 
-      config :tiny_elixir_stripe,
+      config :pin_stripe,
         stripe_api_key: "sk_test_..."
 
   For testing, configure the client to use Req.Test:
 
-      config :tiny_elixir_stripe,
-        req_options: [plug: {Req.Test, TinyElixirStripe}]
+      config :pin_stripe,
+        req_options: [plug: {Req.Test, PinStripe}]
 
   ## CRUD Operations
 
@@ -131,11 +131,11 @@ defmodule TinyElixirStripe.Client do
   """
 
   def new(options \\ []) when is_list(options) do
-    req_options = Application.get_env(:tiny_elixir_stripe, :req_options, [])
+    req_options = Application.get_env(:pin_stripe, :req_options, [])
 
     Req.new(
       base_url: "https://api.stripe.com/v1",
-      auth: {:bearer, Application.fetch_env!(:tiny_elixir_stripe, :stripe_api_key)}
+      auth: {:bearer, Application.fetch_env!(:pin_stripe, :stripe_api_key)}
     )
     |> Req.Request.append_request_steps(
       post: fn req ->
@@ -159,23 +159,23 @@ defmodule TinyElixirStripe.Client do
   ## Examples
 
       # Fetch by ID
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{id: "cus_123", email: "test@example.com"})
       ...> end)
-      iex> {:ok, response} = TinyElixirStripe.Client.read("cus_123")
+      iex> {:ok, response} = PinStripe.Client.read("cus_123")
       iex> response.body["id"]
       "cus_123"
 
       # List resources
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{object: "list", data: []})
       ...> end)
-      iex> {:ok, response} = TinyElixirStripe.Client.read(:customers)
+      iex> {:ok, response} = PinStripe.Client.read(:customers)
       iex> response.body["object"]
       "list"
 
       # Unrecognized entity type
-      iex> TinyElixirStripe.Client.read(:invalid)
+      iex> PinStripe.Client.read(:invalid)
       {:error, :unrecognized_entity_type}
   """
   def read(id_or_entity, options \\ [])
@@ -208,15 +208,15 @@ defmodule TinyElixirStripe.Client do
 
   ## Examples
 
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{id: "cus_new", email: "new@example.com"})
       ...> end)
-      iex> {:ok, response} = TinyElixirStripe.Client.create(:customers, %{email: "new@example.com"})
+      iex> {:ok, response} = PinStripe.Client.create(:customers, %{email: "new@example.com"})
       iex> response.body["id"]
       "cus_new"
 
       # Unrecognized entity type
-      iex> TinyElixirStripe.Client.create(:invalid, %{})
+      iex> PinStripe.Client.create(:invalid, %{})
       {:error, :unrecognized_entity_type}
   """
   def create(entity, params, options \\ []) when is_atom(entity) and is_map(params) do
@@ -243,10 +243,10 @@ defmodule TinyElixirStripe.Client do
 
   ## Examples
 
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{id: "cus_123", name: "Updated"})
       ...> end)
-      iex> {:ok, response} = TinyElixirStripe.Client.update("cus_123", %{name: "Updated"})
+      iex> {:ok, response} = PinStripe.Client.update("cus_123", %{name: "Updated"})
       iex> response.body["name"]
       "Updated"
   """
@@ -269,10 +269,10 @@ defmodule TinyElixirStripe.Client do
 
   ## Examples
 
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{id: "cus_123", deleted: true})
       ...> end)
-      iex> {:ok, response} = TinyElixirStripe.Client.delete("cus_123")
+      iex> {:ok, response} = PinStripe.Client.delete("cus_123")
       iex> response.body["deleted"]
       true
   """
@@ -297,10 +297,10 @@ defmodule TinyElixirStripe.Client do
 
   ## Examples
 
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{id: "cus_123"})
       ...> end)
-      iex> response = TinyElixirStripe.Client.read!("cus_123")
+      iex> response = PinStripe.Client.read!("cus_123")
       iex> response.body["id"]
       "cus_123"
   """
@@ -333,10 +333,10 @@ defmodule TinyElixirStripe.Client do
 
   ## Examples
 
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{id: "cus_new"})
       ...> end)
-      iex> response = TinyElixirStripe.Client.create!(:customers, %{email: "test@example.com"})
+      iex> response = PinStripe.Client.create!(:customers, %{email: "test@example.com"})
       iex> response.body["id"]
       "cus_new"
   """
@@ -369,10 +369,10 @@ defmodule TinyElixirStripe.Client do
 
   ## Examples
 
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{id: "cus_123", name: "Updated"})
       ...> end)
-      iex> response = TinyElixirStripe.Client.update!("cus_123", %{name: "Updated"})
+      iex> response = PinStripe.Client.update!("cus_123", %{name: "Updated"})
       iex> response.body["name"]
       "Updated"
   """
@@ -401,10 +401,10 @@ defmodule TinyElixirStripe.Client do
 
   ## Examples
 
-      iex> Req.Test.stub(TinyElixirStripe, fn conn ->
+      iex> Req.Test.stub(PinStripe, fn conn ->
       ...>   Req.Test.json(conn, %{id: "cus_123", deleted: true})
       ...> end)
-      iex> response = TinyElixirStripe.Client.delete!("cus_123")
+      iex> response = PinStripe.Client.delete!("cus_123")
       iex> response.body["deleted"]
       true
   """

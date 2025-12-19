@@ -1,10 +1,10 @@
-defmodule TinyElixirStripe.ParsersWithRawBodyTest do
+defmodule PinStripe.ParsersWithRawBodyTest do
   use ExUnit.Case, async: true
 
   import Plug.Test
   import Plug.Conn
 
-  alias TinyElixirStripe.ParsersWithRawBody
+  alias PinStripe.ParsersWithRawBody
 
   @webhook_path "/webhooks/stripe"
   @non_webhook_path "/api/customers"

@@ -1,4 +1,4 @@
-defmodule TinyElixirStripe.WebhookController do
+defmodule PinStripe.WebhookController do
   @moduledoc """
   Base controller for handling Stripe webhook events.
 
@@ -11,7 +11,7 @@ defmodule TinyElixirStripe.WebhookController do
   Create a controller in your Phoenix app:
 
       defmodule MyAppWeb.StripeWebhookController do
-        use TinyElixirStripe.WebhookController, 
+        use PinStripe.WebhookController, 
           handler: MyApp.StripeWebhookHandlers
       end
 
@@ -27,7 +27,7 @@ defmodule TinyElixirStripe.WebhookController do
 
   Configure your webhook secret:
 
-      config :tiny_elixir_stripe,
+      config :pin_stripe,
         stripe_webhook_secret: "whsec_..."
 
   ## Security
@@ -35,16 +35,16 @@ defmodule TinyElixirStripe.WebhookController do
   This controller automatically verifies webhook signatures using the
   `stripe-signature` header. Invalid signatures are rejected with a 400 response.
 
-  The raw request body must be available in `conn.assigns.raw_body` for signature
-  verification to work. Use TinyElixirStripe.ParsersWithRawBody in your endpoint.
+   The raw request body must be available in `conn.assigns.raw_body` for signature
+   verification to work. Use PinStripe.ParsersWithRawBody in your endpoint.
 
   ## Handler Module
 
-  The handler module should use `TinyElixirStripe.WebhookHandler` and define
-  event handlers:
+   The handler module should use `PinStripe.WebhookHandler` and define
+   event handlers:
 
       defmodule MyApp.StripeWebhookHandlers do
-        use TinyElixirStripe.WebhookHandler
+        use PinStripe.WebhookHandler
 
         handle "customer.created", fn event ->
           # Process customer.created event
@@ -94,12 +94,12 @@ defmodule TinyElixirStripe.WebhookController do
       end
 
       defp verify_signature(conn) do
-        secret = Application.fetch_env!(:tiny_elixir_stripe, :stripe_webhook_secret)
+        secret = Application.fetch_env!(:pin_stripe, :stripe_webhook_secret)
         "whsec_" <> _ = secret
 
         with {:ok, signature} <- get_signature(conn),
              raw_body <- reconstruct_raw_body(conn),
-             :ok <- TinyElixirStripe.WebhookSignature.verify(raw_body, signature, secret) do
+             :ok <- PinStripe.WebhookSignature.verify(raw_body, signature, secret) do
           conn
         else
           {:error, error} ->

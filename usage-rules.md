@@ -1,4 +1,4 @@
-# TinyElixirStripe Usage Rules
+# PinStripe Usage Rules
 
 A minimal Stripe SDK for Elixir with webhook handling, built on Req and Spark.
 
@@ -9,7 +9,7 @@ A minimal Stripe SDK for Elixir with webhook handling, built on Req and Spark.
 Install using the Igniter installer, which handles everything automatically:
 
 ```bash
-mix igniter.install tiny_elixir_stripe
+mix igniter.install pin_stripe
 ```
 
 This automatically:
@@ -24,7 +24,7 @@ This automatically:
 If not using Igniter, add to your `mix.exs`:
 
 ```elixir
-{:tiny_elixir_stripe, "~> 0.1"}
+{:pin_stripe, "~> 0.1"}
 ```
 
 Then manually configure endpoints, handlers, and routes (see Manual Setup section in README).
@@ -34,33 +34,33 @@ Then manually configure endpoints, handlers, and routes (see Manual Setup sectio
 Configure your Stripe credentials. Typically done in `config/runtime.exs`:
 
 ```elixir
-config :tiny_elixir_stripe,
+config :pin_stripe,
   stripe_api_key: System.get_env("YOUR_STRIPE_KEY_ENV_VAR"),
   stripe_webhook_secret: System.get_env("YOUR_WEBHOOK_SECRET_ENV_VAR")
 ```
 
 **Required configuration keys:**
-- `:tiny_elixir_stripe, :stripe_api_key` - Your Stripe API key for making requests
-- `:tiny_elixir_stripe, :stripe_webhook_secret` - Your webhook signing secret for verifying webhooks
+- `:pin_stripe, :stripe_api_key` - Your Stripe API key for making requests
+- `:pin_stripe, :stripe_webhook_secret` - Your webhook signing secret for verifying webhooks
 
 **Important**: Never commit API keys to version control. Always use environment variables or a secrets manager.
 
 ## Making API Requests
 
-Use `TinyElixirStripe.request/2` to make Stripe API calls:
+Use `PinStripe.request/2` to make Stripe API calls:
 
 ```elixir
 # GET request
-{:ok, customer} = TinyElixirStripe.request(:get, "/v1/customers/cus_123")
+{:ok, customer} = PinStripe.request(:get, "/v1/customers/cus_123")
 
 # POST request with params
-{:ok, customer} = TinyElixirStripe.request(:post, "/v1/customers", 
+{:ok, customer} = PinStripe.request(:post, "/v1/customers", 
   email: "customer@example.com",
   name: "Jane Doe"
 )
 
 # DELETE request
-{:ok, _} = TinyElixirStripe.request(:delete, "/v1/customers/cus_123")
+{:ok, _} = PinStripe.request(:delete, "/v1/customers/cus_123")
 ```
 
 All requests return `{:ok, response}` or `{:error, reason}` tuples.
@@ -73,7 +73,7 @@ The installer creates a `StripeWebhookHandlers` module. Define handlers using th
 
 ```elixir
 defmodule MyApp.StripeWebhookHandlers do
-  use TinyElixirStripe.WebhookHandler
+  use PinStripe.WebhookHandler
 
   # Function handler - inline
   handle "customer.created", fn event ->
@@ -123,10 +123,10 @@ Use the generator to create handlers quickly:
 
 ```bash
 # Generate a function handler
-mix tiny_elixir_stripe.gen.handler customer.subscription.updated
+mix pin_stripe.gen.handler customer.subscription.updated
 
 # Generate a module handler
-mix tiny_elixir_stripe.gen.handler invoice.paid --handler-type module
+mix pin_stripe.gen.handler invoice.paid --handler-type module
 ```
 
 ### Webhook Controller
@@ -140,7 +140,7 @@ The installer creates `lib/my_app_web/stripe_webhook_controller.ex` which:
 
 ### Security
 
-The installer configures `TinyElixirStripe.ParsersWithRawBody` in your endpoint, which:
+The installer configures `PinStripe.ParsersWithRawBody` in your endpoint, which:
 - Caches the raw request body for signature verification
 - Is required for Stripe webhook security
 - Replaces the standard `Plug.Parsers`
@@ -207,7 +207,7 @@ Common Stripe events:
 
 View all supported events:
 ```bash
-cat deps/tiny_elixir_stripe/priv/supported_stripe_events.txt
+cat deps/pin_stripe/priv/supported_stripe_events.txt
 ```
 
 ## Testing
@@ -250,10 +250,10 @@ end
 
 ## Mix Tasks
 
-- `mix tiny_elixir_stripe.install` - Install and configure TinyElixirStripe
-- `mix tiny_elixir_stripe.gen.handler <event>` - Generate a handler for a specific event
-- `mix tiny_elixir_stripe.set_webhook_path <path>` - Update the webhook route path
-- `mix tiny_elixir_stripe.sync_webhook_handlers` - Sync handlers with Stripe (if using Spark introspection)
+- `mix pin_stripe.install` - Install and configure PinStripe
+- `mix pin_stripe.gen.handler <event>` - Generate a handler for a specific event
+- `mix pin_stripe.set_webhook_path <path>` - Update the webhook route path
+- `mix pin_stripe.sync_webhook_handlers` - Sync handlers with Stripe (if using Spark introspection)
 
 ## Common Mistakes
 
@@ -277,7 +277,7 @@ end
 
 **Webhook signature verification fails**:
 - Check that `ParsersWithRawBody` is configured in your endpoint
-- Verify `:tiny_elixir_stripe, :stripe_webhook_secret` config is set correctly
+- Verify `:pin_stripe, :stripe_webhook_secret` config is set correctly
 - Ensure you're using the secret from the Stripe webhook endpoint settings
 
 **Events not being handled**:
@@ -286,6 +286,6 @@ end
 - Check application logs for errors
 
 **API requests failing**:
-- Verify `:tiny_elixir_stripe, :stripe_api_key` config is set
+- Verify `:pin_stripe, :stripe_api_key` config is set
 - Check API key has correct permissions
 - Ensure you're using the correct API version

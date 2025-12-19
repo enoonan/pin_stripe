@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.TinyElixirStripe.Gen.Handler.Docs do
+defmodule Mix.Tasks.PinStripe.Gen.Handler.Docs do
   @moduledoc false
 
   @spec short_doc() :: String.t()
@@ -8,7 +8,7 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.Handler.Docs do
 
   @spec example() :: String.t()
   def example do
-    "mix tiny_elixir_stripe.gen.handler customer.created"
+    "mix pin_stripe.gen.handler customer.created"
   end
 
   @spec long_doc() :: String.t()
@@ -68,7 +68,7 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.Handler.Docs do
 end
 
 if Code.ensure_loaded?(Igniter) do
-  defmodule Mix.Tasks.TinyElixirStripe.Gen.Handler do
+  defmodule Mix.Tasks.PinStripe.Gen.Handler do
     @shortdoc "#{__MODULE__.Docs.short_doc()}"
 
     @moduledoc __MODULE__.Docs.long_doc()
@@ -78,7 +78,7 @@ if Code.ensure_loaded?(Igniter) do
     @impl Igniter.Mix.Task
     def info(_argv, _composing_task) do
       %Igniter.Mix.Task.Info{
-        group: :tiny_elixir_stripe,
+        group: :pin_stripe,
         adds_deps: [],
         installs: [],
         example: __MODULE__.Docs.example(),
@@ -104,9 +104,9 @@ if Code.ensure_loaded?(Igniter) do
         raise ArgumentError, """
         event name is required.
 
-        Usage: mix tiny_elixir_stripe.gen.handler <event>
+        Usage: mix pin_stripe.gen.handler <event>
 
-        Example: mix tiny_elixir_stripe.gen.handler customer.created
+        Example: mix pin_stripe.gen.handler customer.created
         """
       end
 
@@ -147,7 +147,7 @@ if Code.ensure_loaded?(Igniter) do
 
     defp valid_stripe_event?(event) do
       supported_events_file =
-        Path.join(:code.priv_dir(:tiny_elixir_stripe), "supported_stripe_events.txt")
+        Path.join(:code.priv_dir(:pin_stripe), "supported_stripe_events.txt")
 
       if File.exists?(supported_events_file) do
         supported_events =
@@ -164,7 +164,7 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     defp find_or_create_webhook_handler_module(igniter) do
-      # Try to find a module that uses TinyElixirStripe.WebhookHandler
+      # Try to find a module that uses PinStripe.WebhookHandler
       case find_webhook_handler_module(igniter) do
         {igniter, nil} ->
           create_new_webhook_handler_module(igniter)
@@ -239,7 +239,7 @@ if Code.ensure_loaded?(Igniter) do
 
       with true <- Path.extname(path) == ".ex",
            content <- Rewrite.Source.get(source, :content),
-           true <- content =~ "use TinyElixirStripe.WebhookHandler",
+           true <- content =~ "use PinStripe.WebhookHandler",
            [_, module_name] <- Regex.run(~r/defmodule\s+([\w.]+)/, content) do
         Module.concat([module_name])
       else
@@ -250,7 +250,7 @@ if Code.ensure_loaded?(Igniter) do
     defp find_handler_in_file(path) do
       with true <- File.exists?(path),
            {:ok, content} <- File.read(path),
-           true <- content =~ "use TinyElixirStripe.WebhookHandler",
+           true <- content =~ "use PinStripe.WebhookHandler",
            [_, module_name] <- Regex.run(~r/defmodule\s+([\w.]+)/, content) do
         Module.concat([module_name])
       else
@@ -268,7 +268,7 @@ if Code.ensure_loaded?(Igniter) do
         {:error, _} ->
           # Module doesn't exist, create it
           Igniter.Project.Module.create_module(igniter, module, """
-          use TinyElixirStripe.WebhookHandler
+          use PinStripe.WebhookHandler
           """)
       end
     end
@@ -348,7 +348,7 @@ if Code.ensure_loaded?(Igniter) do
       """
 
       Igniter.Project.Module.find_and_update_module!(igniter, module, fn zipper ->
-        case Igniter.Code.Module.move_to_use(zipper, TinyElixirStripe.WebhookHandler) do
+        case Igniter.Code.Module.move_to_use(zipper, PinStripe.WebhookHandler) do
           {:ok, zipper} ->
             {:ok, Igniter.Code.Common.add_code(zipper, handler_code)}
 
@@ -365,7 +365,7 @@ if Code.ensure_loaded?(Igniter) do
       """
 
       Igniter.Project.Module.find_and_update_module!(igniter, module, fn zipper ->
-        case Igniter.Code.Module.move_to_use(zipper, TinyElixirStripe.WebhookHandler) do
+        case Igniter.Code.Module.move_to_use(zipper, PinStripe.WebhookHandler) do
           {:ok, zipper} ->
             {:ok, Igniter.Code.Common.add_code(zipper, handler_code)}
 
@@ -392,7 +392,7 @@ if Code.ensure_loaded?(Igniter) do
     end
   end
 else
-  defmodule Mix.Tasks.TinyElixirStripe.Gen.Handler do
+  defmodule Mix.Tasks.PinStripe.Gen.Handler do
     @shortdoc "#{__MODULE__.Docs.short_doc()} | Install `igniter` to use"
 
     @moduledoc __MODULE__.Docs.long_doc()
@@ -402,7 +402,7 @@ else
     @impl Mix.Task
     def run(_argv) do
       Mix.shell().error("""
-      The task 'tiny_elixir_stripe.gen.handler' requires igniter. Please install igniter and try again.
+      The task 'pin_stripe.gen.handler' requires igniter. Please install igniter and try again.
 
       For more information, see: https://hexdocs.pm/igniter/readme.html#installation
       """)

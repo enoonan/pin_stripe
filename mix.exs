@@ -1,12 +1,12 @@
-defmodule TinyElixirStripe.MixProject do
+defmodule PinStripe.MixProject do
   use Mix.Project
 
-  @version "0.1.15"
-  @source_url "https://github.com/enoonan/tiny_elixir_stripe"
+  @version "0.2.0"
+  @source_url "https://github.com/enoonan/pin_stripe"
 
   def project do
     [
-      app: :tiny_elixir_stripe,
+      app: :pin_stripe,
       version: @version,
       elixir: "~> 1.19",
       start_permanent: Mix.env() == :prod,
@@ -17,7 +17,7 @@ defmodule TinyElixirStripe.MixProject do
       package: package(),
 
       # Docs
-      name: "TinyElixirStripe",
+      name: "PinStripe",
       source_url: @source_url,
       homepage_url: @source_url,
       docs: docs()
@@ -47,7 +47,7 @@ defmodule TinyElixirStripe.MixProject do
 
   defp description do
     """
-    A minimal Stripe SDK for Elixir with webhook handling, built on Req and Spark.
+    A sharp, professional Stripe SDK for Elixir with webhook handling, built on Req and Spark.
     Provides a simple API client and declarative DSL for webhook handlers with Igniter-powered code generation.
     """
   end
@@ -74,23 +74,23 @@ defmodule TinyElixirStripe.MixProject do
       ],
       groups_for_modules: [
         Core: [
-          TinyElixirStripe,
-          TinyElixirStripe.Client,
-          TinyElixirStripe.WebhookHandler,
-          TinyElixirStripe.WebhookController,
-          TinyElixirStripe.WebhookSignature
+          PinStripe,
+          PinStripe.Client,
+          PinStripe.WebhookHandler,
+          PinStripe.WebhookController,
+          PinStripe.WebhookSignature
         ],
         "Mix Tasks": [
-          Mix.Tasks.TinyElixirStripe.Install,
-          Mix.Tasks.TinyElixirStripe.Gen.Handler,
-          Mix.Tasks.TinyElixirStripe.SetWebhookPath,
-          Mix.Tasks.TinyElixirStripe.SyncWebhookHandlers,
-          Mix.Tasks.TinyElixirStripe.UpdateSupportedEvents
+          Mix.Tasks.PinStripe.Install,
+          Mix.Tasks.PinStripe.Gen.Handler,
+          Mix.Tasks.PinStripe.SetWebhookPath,
+          Mix.Tasks.PinStripe.SyncWebhookHandlers,
+          Mix.Tasks.PinStripe.UpdateSupportedEvents
         ],
         Internal: [
-          TinyElixirStripe.ParsersWithRawBody,
-          TinyElixirStripe.WebhookHandler.Dsl,
-          TinyElixirStripe.WebhookHandler.Info
+          PinStripe.ParsersWithRawBody,
+          PinStripe.WebhookHandler.Dsl,
+          PinStripe.WebhookHandler.Info
         ]
       ]
     ]

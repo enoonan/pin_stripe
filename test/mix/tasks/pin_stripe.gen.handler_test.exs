@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
+defmodule Mix.Tasks.PinStripe.Gen.HandlerTest do
   use ExUnit.Case, async: true
   import Igniter.Test
 
@@ -6,14 +6,14 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "raises error when no event name is provided" do
       assert_raise ArgumentError, ~r/Required positional argument `event`/, fn ->
         test_project()
-        |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [])
+        |> Igniter.compose_task("pin_stripe.gen.handler", [])
       end
     end
 
     test "raises error when invalid event name is provided" do
       assert_raise ArgumentError, ~r/not a valid Stripe event/, fn ->
         test_project()
-        |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", ["invalid.event.name"])
+        |> Igniter.compose_task("pin_stripe.gen.handler", ["invalid.event.name"])
       end
     end
 
@@ -21,9 +21,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
       # Should not raise
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer.created",
         "--handler-type",
         "function"
@@ -35,9 +35,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "finds existing webhook handler module" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer.created",
         "--handler-type",
         "function"
@@ -56,9 +56,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
       # by directly creating the module and then adding a handler
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer.created",
         "--handler-type",
         "function"
@@ -66,7 +66,7 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
       |> then(fn igniter ->
         # Should have the module with the handler
         diff = Igniter.Test.diff(igniter, only: "lib/my_app/stripe_webhook_handlers.ex")
-        assert diff =~ "use TinyElixirStripe.WebhookHandler"
+        assert diff =~ "use PinStripe.WebhookHandler"
         assert diff =~ ~s("customer.created")
         assert diff =~ ~s(fn event ->)
         igniter
@@ -78,9 +78,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "generates function handler stub" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer.created",
         "--handler-type",
         "function"
@@ -98,9 +98,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "generates function handler for event with multiple dots" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "checkout.session.completed",
         "--handler-type",
         "function"
@@ -119,9 +119,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "generates module handler stub with default location" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer.created",
         "--handler-type",
         "module"
@@ -151,9 +151,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "generates module handler with correct naming for multi-part events" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "checkout.session.completed",
         "--handler-type",
         "module"
@@ -181,9 +181,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "generates module handler with custom module name" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer.created",
         "--handler-type",
         "module",
@@ -212,14 +212,14 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "adds handle call to existing webhook handler module" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
 
       handle "charge.succeeded", fn event ->
         # Existing handler
         :ok
       end
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer.created",
         "--handler-type",
         "function"
@@ -236,14 +236,14 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "does not duplicate handler for same event" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
 
       handle "customer.created", fn event ->
         # Existing handler
         :ok
       end
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer.created",
         "--handler-type",
         "function"
@@ -256,9 +256,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "handles events with underscores" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "customer_cash_balance_transaction.created",
         "--handler-type",
         "module"
@@ -286,9 +286,9 @@ defmodule Mix.Tasks.TinyElixirStripe.Gen.HandlerTest do
     test "handles v1 prefixed events" do
       test_project()
       |> Igniter.Project.Module.create_module(MyApp.StripeWebhookHandlers, """
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
       """)
-      |> Igniter.compose_task("tiny_elixir_stripe.gen.handler", [
+      |> Igniter.compose_task("pin_stripe.gen.handler", [
         "v1.billing.meter.error_report_triggered",
         "--handler-type",
         "module"

@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
+defmodule Mix.Tasks.PinStripe.InstallTest do
   use ExUnit.Case, async: true
   import Igniter.Test
 
@@ -12,10 +12,10 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
       pass: ["*/*"],
       json_decoder: Phoenix.json_library()
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> then(fn igniter ->
       diff = Igniter.Test.diff(igniter, only: "lib/my_app/endpoint.ex")
-      assert diff =~ "TinyElixirStripe.ParsersWithRawBody"
+      assert diff =~ "PinStripe.ParsersWithRawBody"
       igniter
     end)
   end
@@ -33,7 +33,7 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
       pipe_through :api
     end
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> then(fn igniter ->
       # Check that the file was modified
       diff = Igniter.Test.diff(igniter, only: "lib/my_app_web/router.ex")
@@ -57,7 +57,7 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
       pipe_through :api
     end
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.install", ["--path", "/custom/webhook"])
+    |> Igniter.compose_task("pin_stripe.install", ["--path", "/custom/webhook"])
     |> then(fn igniter ->
       diff = Igniter.Test.diff(igniter, only: "lib/my_app_web/router.ex")
       assert diff =~ "StripeWebhookController"
@@ -68,38 +68,38 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
 
   test "warns when no endpoint is found" do
     test_project()
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> assert_has_warning(
-      "Could not find a Phoenix endpoint to modify. Please manually replace Plug.Parsers with TinyElixirStripe.ParsersWithRawBody."
+      "Could not find a Phoenix endpoint to modify. Please manually replace Plug.Parsers with PinStripe.ParsersWithRawBody."
     )
   end
 
   test "warns when no router is found" do
     test_project()
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> assert_has_warning(
       "Could not find a Phoenix router to modify. Please manually add the webhook route."
     )
   end
 
-  test "adds tiny_elixir_stripe to import_deps in .formatter.exs" do
+  test "adds pin_stripe to import_deps in .formatter.exs" do
     test_project()
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> then(fn igniter ->
       diff = Igniter.Test.diff(igniter, only: ".formatter.exs")
       assert diff =~ "import_deps"
-      assert diff =~ ":tiny_elixir_stripe"
+      assert diff =~ ":pin_stripe"
       igniter
     end)
   end
 
   test "creates a webhook handler stub module in lib/{app}" do
     test_project()
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> then(fn igniter ->
       # Check that the webhook handler module was created
       diff = Igniter.Test.diff(igniter, only: "lib/test/stripe_webhook_handlers.ex")
-      assert diff =~ "use TinyElixirStripe.WebhookHandler"
+      assert diff =~ "use PinStripe.WebhookHandler"
       igniter
     end)
   end
@@ -107,13 +107,13 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
   test "does not create a duplicate webhook handler if one already exists" do
     test_project()
     |> Igniter.Project.Module.create_module(Test.ExistingHandler, """
-    use TinyElixirStripe.WebhookHandler
+    use PinStripe.WebhookHandler
 
     handle "customer.created", fn event ->
       :ok
     end
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> then(fn igniter ->
       # Check that no new webhook handler was created
       diff = Igniter.Test.diff(igniter, only: "lib/test/stripe_webhook_handlers.ex")
@@ -121,7 +121,7 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
 
       # Verify the existing handler is still there
       diff = Igniter.Test.diff(igniter, only: "lib/test/existing_handler.ex")
-      assert diff =~ "use TinyElixirStripe.WebhookHandler"
+      assert diff =~ "use PinStripe.WebhookHandler"
       assert diff =~ "customer.created"
       igniter
     end)
@@ -129,19 +129,19 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
 
   test "creates a webhook controller in lib/{app}_web" do
     test_project()
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> then(fn igniter ->
       # Check that the webhook controller was created
       diff = Igniter.Test.diff(igniter, only: "lib/test_web/stripe_webhook_controller.ex")
 
-      assert diff =~ "use TinyElixirStripe.WebhookController"
+      assert diff =~ "use PinStripe.WebhookController"
       assert diff =~ "handler: Test.StripeWebhookHandlers"
 
       igniter
     end)
   end
 
-  test "routes to the generated webhook controller, not TinyElixirStripe.WebhookController" do
+  test "routes to the generated webhook controller, not PinStripe.WebhookController" do
     test_project()
     |> Igniter.Project.Module.create_module(TestWeb.Router, """
     use TestWeb, :router
@@ -154,11 +154,11 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
       pipe_through :api
     end
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.install", [])
+    |> Igniter.compose_task("pin_stripe.install", [])
     |> then(fn igniter ->
       diff = Igniter.Test.diff(igniter, only: "lib/test_web/router.ex")
       assert diff =~ "StripeWebhookController"
-      refute diff =~ "TinyElixirStripe.WebhookController"
+      refute diff =~ "PinStripe.WebhookController"
       igniter
     end)
   end
@@ -176,7 +176,7 @@ defmodule Mix.Tasks.TinyElixirStripe.InstallTest do
       pipe_through :api
     end
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.install", ["--path", "/custom/stripe"])
+    |> Igniter.compose_task("pin_stripe.install", ["--path", "/custom/stripe"])
     |> then(fn igniter ->
       diff = Igniter.Test.diff(igniter, only: "lib/test_web/router.ex")
       assert diff =~ "StripeWebhookController"

@@ -1,8 +1,8 @@
-defmodule TinyElixirStripe.WebhookHandlerTest do
+defmodule PinStripe.WebhookHandlerTest do
   use ExUnit.Case, async: true
 
   defmodule TestHandler do
-    use TinyElixirStripe.WebhookHandler
+    use PinStripe.WebhookHandler
 
     handle "customer.created", fn event ->
       send(self(), {:customer_created, event})
@@ -26,7 +26,7 @@ defmodule TinyElixirStripe.WebhookHandlerTest do
 
   describe "DSL definition" do
     test "defines handlers using handle/2 with function" do
-      handlers = TinyElixirStripe.WebhookHandler.Info.handlers(TestHandler)
+      handlers = PinStripe.WebhookHandler.Info.handlers(TestHandler)
 
       assert length(handlers) == 3
 
@@ -36,7 +36,7 @@ defmodule TinyElixirStripe.WebhookHandlerTest do
     end
 
     test "defines handlers using handle/2 with module" do
-      handlers = TinyElixirStripe.WebhookHandler.Info.handlers(TestHandler)
+      handlers = PinStripe.WebhookHandler.Info.handlers(TestHandler)
 
       customer_updated = Enum.find(handlers, &(&1.event_type == "customer.updated"))
       assert customer_updated
@@ -75,7 +75,7 @@ defmodule TinyElixirStripe.WebhookHandlerTest do
 
   describe "error handling" do
     defmodule ErrorHandler do
-      use TinyElixirStripe.WebhookHandler
+      use PinStripe.WebhookHandler
 
       handle "will.raise", fn _event ->
         raise "Something went wrong"

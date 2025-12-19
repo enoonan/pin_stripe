@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.TinyElixirStripe.SyncWebhookHandlers.Docs do
+defmodule Mix.Tasks.PinStripe.SyncWebhookHandlers.Docs do
   @moduledoc false
 
   @spec short_doc() :: String.t()
@@ -8,7 +8,7 @@ defmodule Mix.Tasks.TinyElixirStripe.SyncWebhookHandlers.Docs do
 
   @spec example() :: String.t()
   def example do
-    "mix tiny_elixir_stripe.sync_webhook_handlers"
+    "mix pin_stripe.sync_webhook_handlers"
   end
 
   @spec long_doc() :: String.t()
@@ -91,7 +91,7 @@ defmodule Mix.Tasks.TinyElixirStripe.SyncWebhookHandlers.Docs do
 end
 
 if Code.ensure_loaded?(Igniter) do
-  defmodule Mix.Tasks.TinyElixirStripe.SyncWebhookHandlers do
+  defmodule Mix.Tasks.PinStripe.SyncWebhookHandlers do
     @shortdoc "#{__MODULE__.Docs.short_doc()}"
 
     @moduledoc __MODULE__.Docs.long_doc()
@@ -101,13 +101,13 @@ if Code.ensure_loaded?(Igniter) do
     @impl Igniter.Mix.Task
     def info(_argv, _composing_task) do
       %Igniter.Mix.Task.Info{
-        group: :tiny_elixir_stripe,
+        group: :pin_stripe,
         adds_deps: [],
         installs: [],
         example: __MODULE__.Docs.example(),
         only: nil,
         positional: [],
-        composes: ["tiny_elixir_stripe.gen.handler"],
+        composes: ["pin_stripe.gen.handler"],
         schema: [
           api_key: :string,
           handler_type: :string,
@@ -187,7 +187,7 @@ if Code.ensure_loaded?(Igniter) do
 
     defp fetch_config_api_key do
       try do
-        {:ok, Application.fetch_env!(:tiny_elixir_stripe, :stripe_api_key)}
+        {:ok, Application.fetch_env!(:pin_stripe, :stripe_api_key)}
       rescue
         _ -> :error
       end
@@ -348,7 +348,7 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     defp find_webhook_handler_module(igniter) do
-      # Search all .ex files in the project for modules using TinyElixirStripe.WebhookHandler
+      # Search all .ex files in the project for modules using PinStripe.WebhookHandler
       found_module =
         igniter.rewrite
         |> Rewrite.sources()
@@ -362,7 +362,7 @@ if Code.ensure_loaded?(Igniter) do
 
       with true <- Path.extname(path) == ".ex",
            content <- Rewrite.Source.get(source, :content),
-           true <- content =~ "use TinyElixirStripe.WebhookHandler",
+           true <- content =~ "use PinStripe.WebhookHandler",
            [_, module_name] <- Regex.run(~r/defmodule\s+([\w.]+)/, content) do
         Module.concat([module_name])
       else
@@ -480,7 +480,7 @@ if Code.ensure_loaded?(Igniter) do
         Mix.shell().info("  • #{event} (#{handler_type_display} handler)")
 
         # Compose the gen.handler task
-        Igniter.compose_task(acc, "tiny_elixir_stripe.gen.handler", argv)
+        Igniter.compose_task(acc, "pin_stripe.gen.handler", argv)
       end)
       |> tap(fn _ ->
         Mix.shell().info("\n✓ Done! Generated #{MapSet.size(missing_events)} new handler(s).")
@@ -499,7 +499,7 @@ if Code.ensure_loaded?(Igniter) do
     end
   end
 else
-  defmodule Mix.Tasks.TinyElixirStripe.SyncWebhookHandlers do
+  defmodule Mix.Tasks.PinStripe.SyncWebhookHandlers do
     @shortdoc "#{__MODULE__.Docs.short_doc()} | Install `igniter` to use"
 
     @moduledoc __MODULE__.Docs.long_doc()
@@ -509,7 +509,7 @@ else
     @impl Mix.Task
     def run(_argv) do
       Mix.shell().error("""
-      The task 'tiny_elixir_stripe.sync_webhook_handlers' requires igniter. Please install igniter and try again.
+      The task 'pin_stripe.sync_webhook_handlers' requires igniter. Please install igniter and try again.
 
       For more information, see: https://hexdocs.pm/igniter/readme.html#installation
       """)

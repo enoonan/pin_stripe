@@ -1,4 +1,4 @@
-defmodule TinyElixirStripe.WebhookHandler do
+defmodule PinStripe.WebhookHandler do
   @moduledoc """
   Spark DSL for defining webhook handlers.
 
@@ -7,7 +7,7 @@ defmodule TinyElixirStripe.WebhookHandler do
   ## Example
 
       defmodule MyApp.StripeWebhookHandlers do
-        use TinyElixirStripe.WebhookHandler
+        use PinStripe.WebhookHandler
 
         handle "customer.created", fn event ->
           # Process customer.created event
@@ -24,6 +24,6 @@ defmodule TinyElixirStripe.WebhookHandler do
 
   use Spark.Dsl,
     default_extensions: [
-      extensions: [TinyElixirStripe.WebhookHandler.Dsl]
+      extensions: [PinStripe.WebhookHandler.Dsl]
     ]
 end

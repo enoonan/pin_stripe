@@ -1,4 +1,4 @@
-defmodule TinyElixirStripe do
+defmodule PinStripe do
   @moduledoc """
   A minimal Stripe SDK for Elixir with webhook handling, built on Req and Spark.
 
@@ -6,7 +6,7 @@ defmodule TinyElixirStripe do
   >
   > This library is still experimental! It's thoroughly tested in ExUnit, but that's it.
 
-  TinyElixirStripe provides:
+  PinStripe provides:
 
   - **Simple API Client** - Built on Req with automatic ID prefix recognition
   - **Webhook Handler DSL** - Using Spark for clean, declarative webhook handling
@@ -18,17 +18,17 @@ defmodule TinyElixirStripe do
 
   Install with Igniter:
 
-      mix tiny_elixir_stripe.install
+      mix pin_stripe.install
 
   Configure your API key:
 
-      config :tiny_elixir_stripe,
+      config :pin_stripe,
         stripe_api_key: System.get_env("STRIPE_SECRET_KEY")
 
   Handle webhook events:
 
       defmodule MyApp.StripeWebhookHandlers do
-        use TinyElixirStripe.WebhookHandler
+        use PinStripe.WebhookHandler
 
         handle "customer.created", fn event ->
           # Your logic here
@@ -38,7 +38,7 @@ defmodule TinyElixirStripe do
 
   Call the Stripe API:
 
-      alias TinyElixirStripe.Client
+      alias PinStripe.Client
 
       {:ok, response} = Client.read("cus_123")
       {:ok, response} = Client.create(:customers, %{email: "test@example.com"})

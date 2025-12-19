@@ -1,4 +1,4 @@
-defmodule TinyElixirStripe.ParsersWithRawBody do
+defmodule PinStripe.ParsersWithRawBody do
   @moduledoc """
   A custom Plug.Parsers that caches the raw request body for webhook routes.
 
@@ -20,7 +20,7 @@ defmodule TinyElixirStripe.ParsersWithRawBody do
         json_decoder: Phoenix.json_library()
 
       # After:
-      plug TinyElixirStripe.ParsersWithRawBody,
+      plug PinStripe.ParsersWithRawBody,
         parsers: [:urlencoded, :multipart, :json],
         pass: ["*/*"],
         json_decoder: Phoenix.json_library()

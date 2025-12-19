@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-12-19
+
+### Changed
+
+**🎉 Complete rebrand from TinyElixirStripe to PinStripe!**
+
+The library has been rebranded with a new name that better reflects its sharp, professional approach to Stripe integration. Inspired by the pinstripe suit - clean, elegant, and professional.
+
+- **Package name**: `tiny_elixir_stripe` → `pin_stripe`
+- **Module namespace**: `TinyElixirStripe` → `PinStripe`
+- **Config atoms**: `:tiny_elixir_stripe` → `:pin_stripe`
+- **Mix tasks**: `mix tiny_elixir_stripe.*` → `mix pin_stripe.*`
+
+This is a **breaking change**. If you're upgrading from TinyElixirStripe:
+1. Update your `mix.exs` dependency from `:tiny_elixir_stripe` to `:pin_stripe`
+2. Replace all `TinyElixirStripe` module references with `PinStripe`
+3. Update config keys from `:tiny_elixir_stripe` to `:pin_stripe`
+4. Update mix task calls (e.g., `mix pin_stripe.install` instead of `mix tiny_elixir_stripe.install`)
+
 ## [0.0.2] - 2025-12-18
 
 ### Added

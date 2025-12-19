@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPathTest do
+defmodule Mix.Tasks.PinStripe.SetWebhookPathTest do
   use ExUnit.Case, async: true
   import Igniter.Test
 
@@ -11,7 +11,7 @@ defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPathTest do
       plug :accepts, ["json"]
     end
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.set_webhook_path", ["/api/stripe-webhook"])
+    |> Igniter.compose_task("pin_stripe.set_webhook_path", ["/api/stripe-webhook"])
     |> then(fn igniter ->
       diff = Igniter.Test.diff(igniter, only: "lib/my_app_web/router.ex")
       # New route should be added
@@ -30,7 +30,7 @@ defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPathTest do
       plug :accepts, ["json"]
     end
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.set_webhook_path", ["/webhooks/stripe"])
+    |> Igniter.compose_task("pin_stripe.set_webhook_path", ["/webhooks/stripe"])
     |> then(fn igniter ->
       diff = Igniter.Test.diff(igniter, only: "lib/my_app_web/router.ex")
       # New route should be added
@@ -53,7 +53,7 @@ defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPathTest do
       pipe_through :api
     end
     """)
-    |> Igniter.compose_task("tiny_elixir_stripe.set_webhook_path", ["/stripe-webhook"])
+    |> Igniter.compose_task("pin_stripe.set_webhook_path", ["/stripe-webhook"])
     |> then(fn igniter ->
       diff = Igniter.Test.diff(igniter, only: "lib/my_app_web/router.ex")
       # New route should be added in /api scope
@@ -65,7 +65,7 @@ defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPathTest do
 
   test "warns when no router is found" do
     test_project()
-    |> Igniter.compose_task("tiny_elixir_stripe.set_webhook_path", ["/new/path"])
+    |> Igniter.compose_task("pin_stripe.set_webhook_path", ["/new/path"])
     |> assert_has_warning(
       "Could not find a Phoenix router. Please manually add the webhook route."
     )
@@ -74,7 +74,7 @@ defmodule Mix.Tasks.TinyElixirStripe.SetWebhookPathTest do
   test "raises error when no path is provided" do
     assert_raise ArgumentError, ~r/Required positional argument.*path/, fn ->
       test_project()
-      |> Igniter.compose_task("tiny_elixir_stripe.set_webhook_path", [])
+      |> Igniter.compose_task("pin_stripe.set_webhook_path", [])
       |> apply_igniter!()
     end
   end

@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.TinyElixirStripe.UpdateSupportedEvents do
+defmodule Mix.Tasks.PinStripe.UpdateSupportedEvents do
   @shortdoc "Update the list of supported Stripe webhook events (for library contributors)"
 
   @moduledoc """
@@ -9,7 +9,7 @@ defmodule Mix.Tasks.TinyElixirStripe.UpdateSupportedEvents do
 
   ## Usage
 
-      mix tiny_elixir_stripe.update_supported_events
+      mix pin_stripe.update_supported_events
 
   This task will:
   1. Run `stripe trigger --help` to get the list of supported events

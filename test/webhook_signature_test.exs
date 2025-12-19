@@ -1,7 +1,7 @@
-defmodule TinyElixirStripe.WebhookSignatureTest do
+defmodule PinStripe.WebhookSignatureTest do
   use ExUnit.Case, async: true
 
-  alias TinyElixirStripe.WebhookSignature
+  alias PinStripe.WebhookSignature
 
   @secret "whsec_test_secret_key"
   @payload ~s({"id":"evt_test","type":"customer.created"})

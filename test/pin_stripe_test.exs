@@ -1,18 +1,18 @@
-defmodule TinyElixirStripeTest do
+defmodule PinStripeTest do
   use ExUnit.Case, async: true
-  doctest TinyElixirStripe
-  doctest TinyElixirStripe.Client
+  doctest PinStripe
+  doctest PinStripe.Client
 
-  alias TinyElixirStripe.Client
+  alias PinStripe.Client
 
   setup do
     # Set test environment for stripe_api_key and plug
-    Application.put_env(:tiny_elixir_stripe, :stripe_api_key, "sk_test_123")
-    Application.put_env(:tiny_elixir_stripe, :req_options, plug: {Req.Test, TinyElixirStripe})
+    Application.put_env(:pin_stripe, :stripe_api_key, "sk_test_123")
+    Application.put_env(:pin_stripe, :req_options, plug: {Req.Test, PinStripe})
 
     on_exit(fn ->
-      Application.delete_env(:tiny_elixir_stripe, :stripe_api_key)
-      Application.delete_env(:tiny_elixir_stripe, :req_options)
+      Application.delete_env(:pin_stripe, :stripe_api_key)
+      Application.delete_env(:pin_stripe, :req_options)
     end)
 
     :ok
@@ -20,7 +20,7 @@ defmodule TinyElixirStripeTest do
 
   describe "read/2" do
     test "fetches a customer by ID successfully" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         Req.Test.json(conn, %{id: "cus_123", email: "test@example.com"})
       end)
 
@@ -30,7 +30,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "handles customer not found" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         conn
         |> Plug.Conn.put_status(404)
         |> Req.Test.json(%{error: %{message: "Not found"}})
@@ -42,7 +42,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "fetches a product by deriving entity type from ID" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         Req.Test.json(conn, %{id: "product_123", name: "Test Product"})
       end)
 
@@ -52,7 +52,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "lists customers when given :customers atom" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         assert conn.request_path == "/v1/customers"
         assert conn.method == "GET"
 
@@ -72,7 +72,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "lists products when given :products atom" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         assert conn.request_path == "/v1/products"
 
         Req.Test.json(conn, %{
@@ -93,7 +93,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "lists with query parameters" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         assert conn.request_path == "/v1/customers"
         # Query params would be in conn.query_params
         Req.Test.json(conn, %{object: "list", data: []})
@@ -107,7 +107,7 @@ defmodule TinyElixirStripeTest do
 
   describe "create/3" do
     test "creates a customer successfully with params" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         assert conn.method == "POST"
         assert conn.request_path == "/v1/customers"
         Req.Test.json(conn, %{id: "cus_new", email: "test@example.com"})
@@ -119,7 +119,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "handles validation errors on create" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         conn
         |> Plug.Conn.put_status(400)
         |> Req.Test.json(%{error: %{message: "Invalid email"}})
@@ -132,7 +132,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "creates a product with atom entity type" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         assert conn.request_path == "/v1/products"
         Req.Test.json(conn, %{id: "product_new", name: "Test Product"})
       end)
@@ -151,7 +151,7 @@ defmodule TinyElixirStripeTest do
 
   describe "update/3" do
     test "updates a customer successfully with params" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         assert conn.method == "POST"
         Req.Test.json(conn, %{id: "cus_123", name: "Updated Name"})
       end)
@@ -162,7 +162,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "handles update errors" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         conn
         |> Plug.Conn.put_status(404)
         |> Req.Test.json(%{error: %{message: "Customer not found"}})
@@ -176,7 +176,7 @@ defmodule TinyElixirStripeTest do
 
   describe "delete/2" do
     test "deletes a customer successfully" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         assert conn.method == "DELETE"
         Req.Test.json(conn, %{id: "cus_123", deleted: true})
       end)
@@ -187,7 +187,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "handles delete errors" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         conn
         |> Plug.Conn.put_status(404)
         |> Req.Test.json(%{error: %{message: "Not found"}})
@@ -201,7 +201,7 @@ defmodule TinyElixirStripeTest do
 
   describe "read!/2" do
     test "fetches a customer successfully and returns response" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         Req.Test.json(conn, %{id: "cus_123", email: "test@example.com"})
       end)
 
@@ -217,7 +217,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "raises on HTTP error" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         conn
         |> Plug.Conn.put_status(404)
         |> Req.Test.json(%{error: %{message: "Not found"}})
@@ -231,7 +231,7 @@ defmodule TinyElixirStripeTest do
 
   describe "create!/3" do
     test "creates a customer successfully and returns response" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         Req.Test.json(conn, %{id: "cus_new", email: "test@example.com"})
       end)
 
@@ -247,7 +247,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "raises on validation error" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         conn
         |> Plug.Conn.put_status(400)
         |> Req.Test.json(%{error: %{message: "Invalid email"}})
@@ -261,7 +261,7 @@ defmodule TinyElixirStripeTest do
 
   describe "update!/3" do
     test "updates a customer successfully and returns response" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         Req.Test.json(conn, %{id: "cus_123", name: "Updated"})
       end)
 
@@ -271,7 +271,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "raises on HTTP error" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         conn
         |> Plug.Conn.put_status(404)
         |> Req.Test.json(%{error: %{message: "Not found"}})
@@ -285,7 +285,7 @@ defmodule TinyElixirStripeTest do
 
   describe "delete!/2" do
     test "deletes a customer successfully and returns response" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         Req.Test.json(conn, %{id: "cus_123", deleted: true})
       end)
 
@@ -295,7 +295,7 @@ defmodule TinyElixirStripeTest do
     end
 
     test "raises on HTTP error" do
-      Req.Test.stub(TinyElixirStripe, fn conn ->
+      Req.Test.stub(PinStripe, fn conn ->
         conn
         |> Plug.Conn.put_status(404)
         |> Req.Test.json(%{error: %{message: "Not found"}})

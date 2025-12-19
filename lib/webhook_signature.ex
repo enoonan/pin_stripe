@@ -1,4 +1,4 @@
-defmodule TinyElixirStripe.WebhookSignature do
+defmodule PinStripe.WebhookSignature do
   @moduledoc """
   Verifies Stripe webhook signatures.
 
@@ -11,14 +11,14 @@ defmodule TinyElixirStripe.WebhookSignature do
 
   Configure your webhook secret in your application config:
 
-      config :tiny_elixir_stripe,
+      config :pin_stripe,
         stripe_webhook_secret: "whsec_..."
 
   ## Usage
 
       payload = ~s({"id": "evt_test", "type": "customer.created"})
       signature = get_req_header(conn, "stripe-signature")
-      secret = Application.fetch_env!(:tiny_elixir_stripe, :stripe_webhook_secret)
+      secret = Application.fetch_env!(:pin_stripe, :stripe_webhook_secret)
 
       case WebhookSignature.verify(payload, signature, secret) do
         :ok ->
@@ -41,7 +41,7 @@ defmodule TinyElixirStripe.WebhookSignature do
       iex> payload = ~s({"type": "test"})
       iex> timestamp = System.system_time(:second)
       iex> secret = "whsec_test"
-      iex> signature = TinyElixirStripe.WebhookSignature.sign(payload, timestamp, secret)
+      iex> signature = PinStripe.WebhookSignature.sign(payload, timestamp, secret)
       iex> String.starts_with?(signature, "t=")
       true
   """
@@ -65,8 +65,8 @@ defmodule TinyElixirStripe.WebhookSignature do
       iex> payload = ~s({"type": "test"})
       iex> timestamp = System.system_time(:second)
       iex> secret = "whsec_test"
-      iex> signature = TinyElixirStripe.WebhookSignature.sign(payload, timestamp, secret)
-      iex> TinyElixirStripe.WebhookSignature.verify(payload, signature, secret)
+      iex> signature = PinStripe.WebhookSignature.sign(payload, timestamp, secret)
+      iex> PinStripe.WebhookSignature.verify(payload, signature, secret)
       :ok
   """
   @spec verify(binary(), binary(), binary()) :: :ok | {:error, binary()}

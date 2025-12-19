@@ -1,4 +1,4 @@
-defmodule TinyElixirStripe.WebhookHandler.Dsl do
+defmodule PinStripe.WebhookHandler.Dsl do
   @moduledoc """
   DSL extension for defining webhook handlers.
   """
@@ -39,6 +39,6 @@ defmodule TinyElixirStripe.WebhookHandler.Dsl do
   use Spark.Dsl.Extension,
     sections: [@handlers],
     transformers: [
-      TinyElixirStripe.WebhookHandler.Transformers.GenerateHandleEvent
+      PinStripe.WebhookHandler.Transformers.GenerateHandleEvent
     ]
 end

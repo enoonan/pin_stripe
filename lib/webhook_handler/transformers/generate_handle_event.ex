@@ -1,4 +1,4 @@
-defmodule TinyElixirStripe.WebhookHandler.Transformers.GenerateHandleEvent do
+defmodule PinStripe.WebhookHandler.Transformers.GenerateHandleEvent do
   @moduledoc """
   Transformer that generates handle_event/2 functions for webhook handlers.
   """
@@ -6,7 +6,7 @@ defmodule TinyElixirStripe.WebhookHandler.Transformers.GenerateHandleEvent do
   use Spark.Dsl.Transformer
 
   def transform(dsl_state) do
-    handlers = TinyElixirStripe.WebhookHandler.Info.handlers(dsl_state)
+    handlers = PinStripe.WebhookHandler.Info.handlers(dsl_state)
 
     handle_event_code =
       quote do
