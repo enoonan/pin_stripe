@@ -20,43 +20,38 @@ My hope is that this should suffice for 95% of all apps that need to integrate w
 
 ## Installation
 
-### Using Igniter (Recommended)
-
-The fastest way to install is using the Igniter installer:
-
-```bash
-mix igniter.install tiny_elixir_stripe
-```
-
-This will:
-1. Add the dependency to your `mix.exs`
-2. Replace `Plug.Parsers` with `TinyElixirStripe.ParsersWithRawBody` in your Phoenix endpoint (required for webhook signature verification)
-3. Create a `StripeWebhookHandlers` module for defining event handlers
-4. Generate a `StripeWebhookController` in your Phoenix app
-5. Add the webhook route to your router (default: `/webhooks/stripe`)
-6. Configure `.formatter.exs` for DSL formatting support
-
-Then configure your Stripe credentials in `config/runtime.exs`:
-
-```elixir
-config :tiny_elixir_stripe,
-  stripe_api_key: System.get_env("YOUR_STRIPE_KEY_ENV_VAR"),
-  stripe_webhook_secret: System.get_env("YOUR_WEBHOOK_SECRET_ENV_VAR")
-```
-
-### Manual Installation
-
-If you prefer not to use Igniter, add to your `mix.exs`:
+Add `tiny_elixir_stripe` to your `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:tiny_elixir_stripe, "~> 0.1"}
+    {:tiny_elixir_stripe, "~> 0.1.11"},
+    {:igniter, "~> 0.6"}  # Optional but recommended for code generation
   ]
 end
 ```
 
-Then follow the [Manual Setup](#manual-setup) instructions below.
+### Quick Setup with Igniter
+
+The fastest way to get started is using the Igniter installer:
+
+```bash
+mix tiny_elixir_stripe.install 
+```
+
+This will:
+1. Replace `Plug.Parsers` with `TinyElixirStripe.ParsersWithRawBody` in your Phoenix endpoint, used for verifying incoming webhook signatures
+2. Create a `StripeWebhookHandlers` module for defining event handlers
+3. Generate a `StripeWebhookController` in your Phoenix app
+4. Add the webhook route to your router at the specified path
+5. Configure `.formatter.exs` for DSL formatting support
+
+Configure your Stripe API key in `config/config.exs`:
+
+```elixir
+config :tiny_elixir_stripe,
+  stripe_api_key: System.get_env("STRIPE_SECRET_KEY")
+```
 
 ### Changing the Webhook Path
 
@@ -389,7 +384,7 @@ end
 # config/config.exs
 config :tiny_elixir_stripe,
   stripe_api_key: System.get_env("STRIPE_SECRET_KEY"),
-  stripe_webhook_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
+  stripe_webhook_signing_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
 
 # config/test.exs  
 config :tiny_elixir_stripe,
