@@ -471,6 +471,7 @@ defmodule PinStripe.Client do
   def parse_url("cs_" <> _ = id), do: "/checkout/sessions/#{id}"
   def parse_url("inv_" <> _ = id), do: "/invoices/#{id}"
   def parse_url("evt_" <> _ = id), do: "/events/#{id}"
+  def parse_url("bps_" <> _ = id), do: "/billing_portal/sessions/#{id}"
   def parse_url(url) when is_binary(url), do: url
 
   @doc """
@@ -496,6 +497,7 @@ defmodule PinStripe.Client do
   def entity_to_path(:invoices), do: {:ok, "/invoices"}
   def entity_to_path(:events), do: {:ok, "/events"}
   def entity_to_path(:checkout_sessions), do: {:ok, "/checkout/sessions"}
+  def entity_to_path(:billing_portal_sessions), do: {:ok, "/billing_portal/sessions"}
   def entity_to_path(_), do: {:error, :unrecognized_entity_type}
 
   @doc false
