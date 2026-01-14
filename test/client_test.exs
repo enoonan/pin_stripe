@@ -276,4 +276,30 @@ defmodule PinStripe.ClientTest do
       end
     end
   end
+
+  describe "billing_portal_sessions" do
+    test "creates a billing portal session" do
+      Mock.stub_create(:billing_portal_sessions, %{
+        "id" => "bps_123",
+        "object" => "billing_portal.session",
+        "url" => "https://billing.stripe.com/session/test_123"
+      })
+
+      result = Client.create(:billing_portal_sessions, %{customer: "cus_123"})
+
+      assert {:ok, %{body: %{"id" => "bps_123", "object" => "billing_portal.session"}}} = result
+    end
+
+    test "reads a billing portal session by ID" do
+      Mock.stub_read("bps_123", %{
+        "id" => "bps_123",
+        "object" => "billing_portal.session",
+        "customer" => "cus_123"
+      })
+
+      result = Client.read("bps_123")
+
+      assert {:ok, %{body: %{"id" => "bps_123"}}} = result
+    end
+  end
 end
