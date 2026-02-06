@@ -72,6 +72,42 @@ defmodule PinStripe.WebhookController do
           :ok
         end
       end
+
+  ## Error Handling
+
+  The controller returns HTTP 200 for any handler that completes normally (regardless
+  of return value). Stripe considers a 200 response as successful delivery and will not
+  retry the event.
+
+  If a handler raises an exception, it propagates through Phoenix, which returns a 500
+  response. Stripe treats any non-2xx response as a failure and retries with exponential
+  backoff (5 min, 30 min, 2 hours, 5 hours, 10 hours, then every 12 hours).
+
+  **Warning:** After 3 days of consecutive failures, Stripe disables the endpoint
+  entirely. Once disabled, *all* events stop being delivered — not just the ones that
+  failed. Use `raise` only for transient failures (e.g., database timeouts) where a
+  retry is likely to succeed.
+
+  ### Examples
+
+      # Successful handling — returns 200
+      handle "invoice.paid", fn event ->
+        MyApp.Billing.process_invoice(event["data"]["object"])
+        :ok
+      end
+
+      # Permanent failure — returns 200, handle the error yourself
+      handle "checkout.session.completed", fn event ->
+        case MyApp.Billing.provision(event) do
+          :ok -> :ok
+          {:error, reason} -> MyApp.ErrorReporter.report(reason, event)
+        end
+      end
+
+      # Transient failure — raises, returns 500, Stripe retries
+      handle "customer.subscription.updated", fn event ->
+        MyApp.Billing.sync_subscription!(event["data"]["object"])
+      end
   """
 
   defmacro __using__(_opts) do

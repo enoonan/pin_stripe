@@ -20,7 +20,10 @@ defmodule PinStripe.WebhookHandler.Transformers.GenerateHandleEvent do
       @doc """
       Handles a webhook event by dispatching to the appropriate handler.
 
-      Returns `:ok` or the result of the handler function.
+      The return value is ignored by the controller — any normal return results
+      in an HTTP 200 response. To trigger a Stripe retry, raise an exception.
+      See `PinStripe.WebhookController` for error handling details.
+
       Unknown event types return `:ok`.
       """
       def handle_event(event_type, event)
