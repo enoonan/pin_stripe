@@ -66,6 +66,7 @@ defmodule PinStripe.Client do
   - `:invoices` - Invoice objects
   - `:events` - Event objects
   - `:checkout_sessions` - Checkout Session objects
+  - `:payment_intents` - Payment Intent object
 
   ## Error Handling
 
@@ -104,6 +105,7 @@ defmodule PinStripe.Client do
   - `inv_*` → `/invoices/{id}`
   - `evt_*` → `/events/{id}`
   - `cs_*` → `/checkout/sessions/{id}`
+  - `pi_*` → `/payment_intents/{id}`
 
   ## Examples
 
@@ -472,6 +474,7 @@ defmodule PinStripe.Client do
   def parse_url("inv_" <> _ = id), do: "/invoices/#{id}"
   def parse_url("evt_" <> _ = id), do: "/events/#{id}"
   def parse_url("bps_" <> _ = id), do: "/billing_portal/sessions/#{id}"
+  def parse_url("pi_" <> _ = id), do: "/payment_intents/#{id}"
   def parse_url(url) when is_binary(url), do: url
 
   @doc """
@@ -498,6 +501,7 @@ defmodule PinStripe.Client do
   def entity_to_path(:events), do: {:ok, "/events"}
   def entity_to_path(:checkout_sessions), do: {:ok, "/checkout/sessions"}
   def entity_to_path(:billing_portal_sessions), do: {:ok, "/billing_portal/sessions"}
+  def entity_to_path(:payment_intents), do: {:ok, "/payment_intents"}
   def entity_to_path(_), do: {:error, :unrecognized_entity_type}
 
   @doc false
