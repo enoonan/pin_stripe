@@ -1,7 +1,7 @@
 defmodule PinStripe.MixProject do
   use Mix.Project
 
-  @version "0.3.4"
+  @version "0.4.0"
   @source_url "https://github.com/enoonan/pin_stripe"
 
   def project do
@@ -38,7 +38,7 @@ defmodule PinStripe.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.31", only: :dev, runtime: false},
       {:usage_rules, "~> 0.1", only: [:dev, :test], runtime: false},
-      {:req, "~> 0.5.0"},
+      {:req, "~> 0.5.0 or ~> 0.6.0"},
       {:spark, "~> 2.3"},
       {:igniter, "~> 0.6", optional: true},
       {:phoenix, "~> 1.7", optional: true}
